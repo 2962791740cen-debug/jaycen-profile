@@ -1,0 +1,446 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;500;700;900&family=Playfair+Display:wght@400;600&family=Cinzel:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-color: #000;
+  --door-color: #080808;
+  --text-color: #e0e0e0;
+  --font-serif: 'Noto Serif SC', serif;
+  --font-display: 'Playfair Display', serif;
+  --font-eng: 'Cinzel', serif;
+  --core-red: #ff3333;
+  --glow-red: #8a0000;
+}
+
+body {
+  font-family: var(--font-serif);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.door-experience,
+.curtain-experience {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.door-experience {
+  background-color: var(--bg-color);
+  perspective: 1000px;
+  color: var(--text-color);
+}
+
+.door-experience * {
+  box-sizing: border-box;
+}
+
+.door-experience .dark-mist {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(ellipse at center, #2a2a2a 0%, #111 40%, #000 80%);
+  opacity: 1;
+  transition: opacity 3s ease;
+}
+
+.door-experience .dark-mist::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.door-experience .brand-container,
+.door-experience .corner-text {
+  position: absolute;
+  z-index: 100;
+  mix-blend-mode: difference;
+}
+
+.door-experience .brand-container {
+  top: 40px;
+  left: 40px;
+}
+
+.door-experience .brand-main {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.door-experience .brand-sub {
+  font-family: var(--font-eng);
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 5px;
+}
+
+.door-experience .corner-text {
+  bottom: 40px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.1em;
+  font-family: var(--font-serif);
+}
+
+.door-experience .corner-left {
+  left: 40px;
+}
+
+.door-experience .corner-right {
+  right: 40px;
+}
+
+.door-experience .scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+}
+
+.door-experience .door {
+  position: absolute;
+  top: -10%;
+  height: 120%;
+  width: 50.5%;
+  background-color: var(--door-color);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+  transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.door-experience .door.left {
+  left: 0;
+  transform-origin: left center;
+  transform: rotateY(35deg);
+  box-shadow: inset -1px 0 2px rgba(255, 255, 255, 0.15), 10px 0 50px rgba(0, 0, 0, 0.8);
+  background: linear-gradient(90deg, #000 0%, #0a0a0a 90%, #151515 100%);
+}
+
+.door-experience .door.right {
+  right: 0;
+  transform-origin: right center;
+  transform: rotateY(-35deg);
+  box-shadow: inset 1px 0 2px rgba(255, 255, 255, 0.15), -10px 0 50px rgba(0, 0, 0, 0.8);
+  background: linear-gradient(-90deg, #000 0%, #0a0a0a 90%, #151515 100%);
+}
+
+.door-experience .crack-glow {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
+  width: 4px;
+  background: #fff;
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.8), 0 0 15px rgba(255, 255, 255, 0.6);
+  opacity: 0;
+  z-index: 20;
+  transition: opacity 2s ease;
+}
+
+.door-experience .content-layer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  pointer-events: none;
+  transform: translateZ(50px);
+}
+
+.door-experience .narrative-text {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: #ddd;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  line-height: 1.8;
+  position: absolute;
+  opacity: 0;
+  transform: translateZ(-100px);
+  transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+  max-width: 800px;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.door-experience .narrative-text.active {
+  opacity: 1;
+  transform: translateZ(0);
+}
+
+.door-experience .final-hero {
+  opacity: 0;
+  transition: opacity 3s ease;
+  color: #fff;
+  transform: translateY(20px);
+  margin-bottom: 20px;
+}
+
+.door-experience .final-hero.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.door-experience .entry-container {
+  margin-top: 5rem;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.door-experience .entry-container.visible {
+  opacity: 1;
+}
+
+.door-experience .entry-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  letter-spacing: 0.5em;
+  padding: 15px 40px;
+  transition: all 0.5s ease;
+}
+
+.door-experience .entry-btn:hover {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.door-experience.closed .door.left {
+  transform: rotateY(0deg);
+}
+
+.door-experience.closed .door.right {
+  transform: rotateY(0deg);
+}
+
+.door-experience.closed .dark-mist {
+  opacity: 0;
+}
+
+.door-experience.closed .crack-glow {
+  opacity: 1;
+}
+
+.door-experience.transitioning {
+  transform: scale(3);
+  opacity: 0;
+  filter: blur(20px);
+  transition: all 1.2s ease-in;
+}
+
+.curtain-experience {
+  font-family: var(--font-serif);
+  background: #f5f5f5;
+  color: #111;
+}
+
+.website-content {
+  position: relative;
+  z-index: 5;
+}
+
+.end-btn {
+  margin-top: 40px;
+  padding: 15px 40px;
+  background: #000;
+  color: #fff;
+  font-size: 1.1rem;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-serif);
+  letter-spacing: 0.2em;
+  transition: all 0.3s ease;
+}
+
+.end-btn:hover {
+  background: var(--core-red);
+  transform: scale(1.05);
+}
+
+.text-line {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 1s ease;
+}
+
+.curtain-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  perspective: 1000px;
+}
+
+.curtain-layer .door {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  background-color: #0a0a0a;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+  z-index: 20;
+  transition: transform 3s cubic-bezier(0.6, 0, 0.2, 1);
+}
+
+.curtain-layer .door.left {
+  left: 0;
+  transform: translateX(-100%);
+  border-right: 1px solid #222;
+}
+
+.curtain-layer .door.right {
+  right: 0;
+  transform: translateX(100%);
+  border-left: 1px solid #222;
+}
+
+.curtain-layer .red-crack {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
+  width: 2px;
+  background: var(--core-red);
+  z-index: 15;
+  opacity: 0;
+  box-shadow: 0 0 20px var(--core-red), 0 0 50px var(--glow-red), 0 0 100px var(--glow-red);
+  transition: opacity 0.5s ease 2.8s;
+}
+
+.curtain-active .door.left {
+  transform: translateX(0);
+}
+
+.curtain-active .door.right {
+  transform: translateX(0);
+}
+
+.curtain-active .red-crack {
+  opacity: 1;
+}
+
+.curtain-copy {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+  color: #fff;
+}
+
+.curtain-copy h1 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 30px rgba(255, 51, 51, 0.3);
+}
+
+.curtain-copy p {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 1.5rem;
+}
+
+.curtain-copy button {
+  margin-top: 2.5rem;
+  opacity: 0;
+  pointer-events: auto;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 10px 24px;
+  letter-spacing: 0.2em;
+  transition: all 0.4s ease;
+}
+
+.curtain-copy button.ready {
+  opacity: 1;
+}
+
+.curtain-copy button:hover {
+  border-color: var(--core-red);
+  color: var(--core-red);
+}
+
+.restart-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* 自定义动画 */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes stamp-in {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(-15deg) scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(-15deg) scale(1.1);
+  }
+  100% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) rotate(-15deg) scale(1);
+  }
+}
+
+@keyframes flow-fast {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out;
+}
+
+.animate-stamp-in {
+  animation: stamp-in 0.8s ease-out forwards;
+}
+
+.animate-flow-fast {
+  animation: flow-fast 1.5s linear infinite;
+}
+

@@ -70,6 +70,62 @@ const FadeIn = ({ children, delay = 0, className = '' }) => {
 };
 
 // ─────────────────────────────────────────────
+// 全局视觉资产：颗粒、光晕、装饰线
+// ─────────────────────────────────────────────
+const GrainOverlay = ({ opacity = 0.06 }) => (
+  <div className="fixed inset-0 pointer-events-none z-[5]" style={{
+    opacity, mixBlendMode: 'overlay',
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.7'/%3E%3C/svg%3E")`,
+  }} />
+);
+
+// 鼠标红光跟随（深色页）
+const CursorGlow = () => {
+  const [pos, setPos] = useState({ x: -300, y: -300 });
+  const [hidden, setHidden] = useState(false);
+
+  useEffect(() => {
+    if (isMobile()) return;
+    const onMove = (e) => setPos({ x: e.clientX, y: e.clientY });
+    const onLeave = () => setHidden(true);
+    const onEnter = () => setHidden(false);
+    window.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseleave', onLeave);
+    document.addEventListener('mouseenter', onEnter);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseleave', onLeave);
+      document.removeEventListener('mouseenter', onEnter);
+    };
+  }, []);
+
+  if (isMobile()) return null;
+  return (
+    <div className="fixed pointer-events-none z-[3] transition-opacity duration-300" style={{
+      left: pos.x - 250, top: pos.y - 250, width: 500, height: 500,
+      opacity: hidden ? 0 : 1,
+      background: 'radial-gradient(circle, rgba(220,38,38,0.13) 0%, rgba(127,29,29,0.04) 30%, transparent 65%)',
+      filter: 'blur(30px)', willChange: 'transform'
+    }} />
+  );
+};
+
+// 标题下划线动画
+const AnimatedHeading = ({ children, color = '#DC2626', className = '' }) => {
+  const [ref, visible] = useFadeIn(0.4);
+  return (
+    <div ref={ref} className={`inline-block ${className}`}>
+      {children}
+      <div className="h-[3px] mt-2 origin-left" style={{
+        background: color,
+        width: visible ? '100%' : '0%',
+        transition: 'width 0.9s cubic-bezier(0.2,0.8,0.2,1) 0.2s',
+      }} />
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────
 // 工具：动画数字
 // ─────────────────────────────────────────────
 const AnimatedNumber = ({ value, duration = 1400 }) => {
@@ -234,6 +290,13 @@ const LandingPage = ({ onEnter }) => {
           100% { transform: translateY(-10vh) translateX(40px); opacity: 0; }
         }
         .ember { position: absolute; bottom: 0; width: 2px; height: 2px; background: #DC2626; border-radius: 50%; box-shadow: 0 0 8px #DC2626, 0 0 4px #FCA5A5; animation: float-ember linear infinite; }
+        @keyframes orb-drift {
+          0%,100% { transform: translate(0, 0); }
+          25% { transform: translate(30px, -40px); }
+          50% { transform: translate(-20px, -60px); }
+          75% { transform: translate(-40px, -20px); }
+        }
+        .orb { position: absolute; border-radius: 50%; filter: blur(40px); pointer-events: none; }
         @keyframes pulse-counter { 0%,100% { opacity: 0.4; } 50% { opacity: 0.7; } }
         .pulse-c { animation: pulse-counter 3s ease-in-out infinite; }
         @keyframes skip-pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 0.7; } }
@@ -256,6 +319,11 @@ const LandingPage = ({ onEnter }) => {
               style={{ left: mousePos.x - 4, top: mousePos.y - 4, width: 8, height: 8, borderRadius: '50%', background: '#DC2626', boxShadow: '0 0 12px #DC2626' }} />
           </>
         )}
+
+        {/* 环境漂浮光球 */}
+        <div className="orb" style={{ width: 280, height: 280, left: '10%', top: '20%', background: 'radial-gradient(circle, rgba(127,29,29,0.35), transparent 70%)', animation: 'orb-drift 18s ease-in-out infinite' }} />
+        <div className="orb" style={{ width: 200, height: 200, right: '15%', top: '50%', background: 'radial-gradient(circle, rgba(220,38,38,0.25), transparent 70%)', animation: 'orb-drift 22s ease-in-out infinite reverse' }} />
+        <div className="orb" style={{ width: 240, height: 240, left: '40%', bottom: '10%', background: 'radial-gradient(circle, rgba(180,83,9,0.18), transparent 70%)', animation: 'orb-drift 26s ease-in-out infinite' }} />
 
         {/* 余烬粒子 */}
         {!mobile && Array.from({ length: 12 }).map((_, i) => (
@@ -360,11 +428,25 @@ const DirectoryPage = ({ onNavigate, completedChapters }) => {
   ];
 
   const liveStats = [
-    { label:'内容期数', val:'40+', desc:'财经数字人IP' },
-    { label:'全网播放', val:'20万', desc:'累计阅读量' },
-    { label:'量化实盘', val:'30万', desc:'阶段收益10%' },
-    { label:'社群运营', val:'90天', desc:'拥抱不完美' },
+    { label:'内容期数', val:'40+', desc:'财经数字人IP', spark:[10,18,22,28,32,36,40] },
+    { label:'全网播放', val:'20万', desc:'累计阅读量', spark:[2,5,8,11,14,17,20] },
+    { label:'量化实盘', val:'30万', desc:'阶段收益10%', spark:[27,28,29,28,30,32,33] },
+    { label:'社群运营', val:'90天', desc:'拥抱不完美', spark:[15,30,45,60,72,82,90] },
   ];
+
+  // mini sparkline 渲染
+  const Sparkline = ({ data, color }) => {
+    const w = 80, h = 18;
+    const max = Math.max(...data), min = Math.min(...data);
+    const range = max - min || 1;
+    const pts = data.map((v, i) => `${(i/(data.length-1))*w},${h - ((v-min)/range)*h}`).join(' ');
+    return (
+      <svg width={w} height={h} className="opacity-70">
+        <polyline points={pts} fill="none" stroke={color} strokeWidth="1.5"/>
+        <circle cx={w} cy={h - ((data[data.length-1]-min)/range)*h} r="2.5" fill={color}/>
+      </svg>
+    );
+  };
 
   return (
     <div className="min-h-screen text-[#1A1414] font-sans selection:bg-[#DC2626] selection:text-white flex flex-col md:flex-row" style={{ background: C.cream }}>
@@ -445,12 +527,18 @@ const DirectoryPage = ({ onNavigate, completedChapters }) => {
         <FadeIn delay={150}>
           <div className="mb-10 grid grid-cols-2 md:grid-cols-4 gap-3">
             {liveStats.map((s, i) => (
-              <div key={i} className="bg-white p-5 border-l-2 hover:bg-[#FFF8F5] transition-all" style={{ borderColor: C.redV }}>
-                <div className="text-[10px] font-mono text-gray-400 uppercase tracking-widest mb-1">{s.label}</div>
-                <div className="text-2xl font-black mb-1" style={{ color: C.redV, fontFamily: "'Playfair Display',serif" }}>
+              <div key={i} className="bg-white p-5 border-l-2 hover:bg-[#FFF8F5] transition-all relative overflow-hidden group" style={{ borderColor: C.redV }}>
+                <div className="flex items-start justify-between mb-1">
+                  <div className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">{s.label}</div>
+                  <Sparkline data={s.spark} color={C.redV}/>
+                </div>
+                <div className="text-2xl md:text-3xl font-black mb-1" style={{ color: C.redV, fontFamily: "'Playfair Display',serif" }}>
                   <AnimatedNumber value={s.val} />
                 </div>
-                <div className="text-[10px] text-gray-400">{s.desc}</div>
+                <div className="text-[10px] text-gray-400 flex items-center gap-1.5">
+                  <div className="w-1 h-1 rounded-full animate-pulse" style={{ background: C.redL }}/>
+                  {s.desc}
+                </div>
               </div>
             ))}
           </div>
@@ -759,7 +847,9 @@ const TimelinePage = ({ onNextModule }) => {
   const fillD = `${pathD} L ${points[points.length - 1].x} ${H - PAD} L ${points[0].x} ${H - PAD} Z`;
 
   return (
-    <div ref={containerRef} data-scroll-container className="h-screen overflow-y-auto font-sans scroll-smooth selection:bg-[#DC2626] selection:text-white" style={{ background: C.black, color: '#d8d0cc' }}>
+    <div ref={containerRef} data-scroll-container className="h-screen overflow-y-auto font-sans scroll-smooth selection:bg-[#DC2626] selection:text-white relative" style={{ background: C.black, color: '#d8d0cc' }}>
+      <CursorGlow />
+      <GrainOverlay opacity={0.08} />
       <div className="fixed top-0 left-0 h-1 z-50 transition-all" style={{ width: `${progress * 100}%`, background: C.redL }} />
       <nav className="fixed top-0 w-full px-6 py-4 flex justify-between items-center z-40 backdrop-blur-md border-b border-white/5" style={{ background: `${C.black}E0` }}>
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNextModule('directory')}>
@@ -992,22 +1082,65 @@ const TracksPage = ({ onNextModule }) => {
         </FadeIn>
 
         <FadeIn>
-          <div className="text-white p-6 md:p-8 mb-10" style={{ background: C.ink }}>
-            <div className="text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-4">三条线的协同关系</div>
-            <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-              {[
-                { k: 'ip', label: '个人IP', role: '外显载体', color: C.redV },
-                { k: 'quant', label: '量化投资', role: '长期硬核能力', color: C.red },
-                { k: 'ai', label: 'AI工作流', role: '中间层放大器', color: C.copper },
-              ].map(item => (
-                <div key={item.k} className={`p-4 md:p-5 border transition-all cursor-pointer ${activeTrack === item.k ? 'border-white/30 bg-white/10' : 'border-white/5 hover:bg-white/[0.05]'}`}
-                  onClick={() => switchTrack(item.k)}>
-                  <div className="text-[10px] font-mono font-bold mb-2" style={{ color: item.color }}>{item.label}</div>
-                  <div className="text-gray-400 text-sm">{item.role}</div>
-                </div>
-              ))}
+          <div className="text-white p-6 md:p-10 mb-10 relative overflow-hidden" style={{ background: C.ink }}>
+            <div className="text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-2">三条线的协同关系</div>
+            <h3 className="text-xl md:text-2xl font-serif font-bold text-white mb-8">不是三个项目<span style={{ color: C.redL }}>·</span>是一个<span style={{ color: C.redL }}>系统</span></h3>
+
+            {/* Venn 图 */}
+            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-10">
+              <div className="relative w-full md:w-1/2 max-w-md">
+                <svg viewBox="0 0 400 320" className="w-full h-auto">
+                  <defs>
+                    <radialGradient id="g_ip" cx="50%" cy="50%">
+                      <stop offset="0%" stopColor={C.redV} stopOpacity="0.55"/>
+                      <stop offset="100%" stopColor={C.redV} stopOpacity="0.18"/>
+                    </radialGradient>
+                    <radialGradient id="g_quant" cx="50%" cy="50%">
+                      <stop offset="0%" stopColor={C.red} stopOpacity="0.55"/>
+                      <stop offset="100%" stopColor={C.red} stopOpacity="0.18"/>
+                    </radialGradient>
+                    <radialGradient id="g_ai" cx="50%" cy="50%">
+                      <stop offset="0%" stopColor={C.copper} stopOpacity="0.55"/>
+                      <stop offset="100%" stopColor={C.copper} stopOpacity="0.18"/>
+                    </radialGradient>
+                  </defs>
+                  {/* 三圆 */}
+                  <circle cx="150" cy="130" r="100" fill="url(#g_ip)" stroke={activeTrack==='ip'?C.redV:`${C.redV}40`} strokeWidth={activeTrack==='ip'?2:1} className="cursor-pointer transition-all"
+                    onClick={()=>switchTrack('ip')}/>
+                  <circle cx="250" cy="130" r="100" fill="url(#g_quant)" stroke={activeTrack==='quant'?C.red:`${C.red}40`} strokeWidth={activeTrack==='quant'?2:1} className="cursor-pointer transition-all"
+                    onClick={()=>switchTrack('quant')}/>
+                  <circle cx="200" cy="210" r="100" fill="url(#g_ai)" stroke={activeTrack==='ai'?C.copper:`${C.copper}40`} strokeWidth={activeTrack==='ai'?2:1} className="cursor-pointer transition-all"
+                    onClick={()=>switchTrack('ai')}/>
+                  {/* 标签 */}
+                  <text x="80" y="80" fill={C.redV} fontSize="14" fontWeight="700" fontFamily="monospace" letterSpacing="2">IP</text>
+                  <text x="298" y="80" fill={C.red} fontSize="14" fontWeight="700" fontFamily="monospace" letterSpacing="2">QUANT</text>
+                  <text x="180" y="298" fill={C.copper} fontSize="14" fontWeight="700" fontFamily="monospace" letterSpacing="2">AI</text>
+                  {/* 中心 */}
+                  <circle cx="200" cy="160" r="38" fill={C.redL} opacity="0.85"/>
+                  <text x="200" y="158" textAnchor="middle" fill="#fff" fontSize="13" fontWeight="700" fontFamily="'Noto Serif SC'">系统赢</text>
+                  <text x="200" y="174" textAnchor="middle" fill="#fff" fontSize="9" opacity="0.7" fontFamily="monospace" letterSpacing="2">SYSTEM</text>
+                </svg>
+              </div>
+
+              {/* 右边交集说明 */}
+              <div className="flex-1 w-full space-y-3">
+                {[
+                  { from:'IP × QUANT', to:'内容→流量→社区→变现 + 量化策略可信度反哺', col: C.redV },
+                  { from:'QUANT × AI', to:'AI辅助策略代码、回测分析、文档生产', col: C.red },
+                  { from:'AI × IP', to:'AI批量生成内容草稿、选题、剪辑、复盘', col: C.copper },
+                  { from:'三者相交', to:'认知 → 内容 → 系统 → 收益的复利闭环', col: C.redL, hl:true },
+                ].map((it, i) => (
+                  <div key={i} className={`p-3 md:p-4 border ${it.hl?'border-white/20 bg-white/5':'border-white/5'}`}>
+                    <div className="text-[10px] font-mono font-bold mb-1" style={{ color: it.col }}>{it.from}</div>
+                    <div className="text-xs md:text-sm text-gray-300">{it.to}</div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="mt-6 text-center text-gray-600 text-sm font-mono">IP × 量化 × AI → 当多个模块联动，才形成真正的护城河</div>
+
+            <div className="mt-8 text-center text-gray-500 text-xs md:text-sm font-mono border-t border-white/5 pt-6">
+              点击圆圈切换 · 三个圆的交集，才是真正的护城河
+            </div>
           </div>
         </FadeIn>
 
@@ -1199,7 +1332,9 @@ const AssetsPage = ({ onNextModule }) => {
   ];
 
   return (
-    <div ref={containerRef} data-scroll-container className="h-screen overflow-y-auto font-sans scroll-smooth selection:bg-[#DC2626] selection:text-white" style={{ background: C.black, color: '#d8d0cc' }}>
+    <div ref={containerRef} data-scroll-container className="h-screen overflow-y-auto font-sans scroll-smooth selection:bg-[#DC2626] selection:text-white relative" style={{ background: C.black, color: '#d8d0cc' }}>
+      <CursorGlow />
+      <GrainOverlay opacity={0.08} />
       <style>{`
         @keyframes flash { 0% { box-shadow: 0 0 0 0 rgba(220,38,38,0); } 30% { box-shadow: 0 0 70px 10px rgba(220,38,38,0.7); } 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0); } }
         .flash { animation: flash 0.8s ease-out; }
@@ -1353,8 +1488,67 @@ const FuturePage = ({ onNextModule }) => {
                 </div>
               ))}
             </div>
-            <div className="text-center py-5 text-sm font-mono px-4" style={{ background: C.ink, color: '#999' }}>
-              IP × 量化 × AI &nbsp;→&nbsp; 认知 · 内容 · 系统 · 收益 · 复利
+            {/* 三线汇流可视化 */}
+            <div className="text-white p-6 md:p-10 relative overflow-hidden" style={{ background: C.ink }}>
+              <div className="text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-6 text-center">三线汇流公式 · The Convergence</div>
+              <svg viewBox="0 0 600 200" className="w-full h-auto max-w-3xl mx-auto">
+                <defs>
+                  <linearGradient id="flow1" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor={C.redV}/><stop offset="100%" stopColor={C.redL}/>
+                  </linearGradient>
+                  <linearGradient id="flow2" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor={C.red}/><stop offset="100%" stopColor={C.redL}/>
+                  </linearGradient>
+                  <linearGradient id="flow3" x1="0%" y1="100%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor={C.copper}/><stop offset="100%" stopColor={C.redL}/>
+                  </linearGradient>
+                </defs>
+
+                {/* 三条流 */}
+                <path d="M 30 40 Q 250 40, 300 100" fill="none" stroke="url(#flow1)" strokeWidth="2.5"/>
+                <path d="M 30 100 L 300 100" fill="none" stroke="url(#flow2)" strokeWidth="2.5"/>
+                <path d="M 30 160 Q 250 160, 300 100" fill="none" stroke="url(#flow3)" strokeWidth="2.5"/>
+
+                {/* 汇流后向右四个产出 */}
+                <path d="M 300 100 Q 380 100, 430 50" fill="none" stroke={C.redL} strokeWidth="1.5" strokeDasharray="3,3" opacity="0.6"/>
+                <path d="M 300 100 L 430 90" fill="none" stroke={C.redL} strokeWidth="1.5" strokeDasharray="3,3" opacity="0.6"/>
+                <path d="M 300 100 L 430 130" fill="none" stroke={C.redL} strokeWidth="1.5" strokeDasharray="3,3" opacity="0.6"/>
+                <path d="M 300 100 Q 380 100, 430 170" fill="none" stroke={C.redL} strokeWidth="1.5" strokeDasharray="3,3" opacity="0.6"/>
+
+                {/* 输入节点 */}
+                <g><circle cx="30" cy="40" r="6" fill={C.redV}/><text x="42" y="44" fill={C.redV} fontSize="13" fontWeight="700" fontFamily="monospace">IP</text></g>
+                <g><circle cx="30" cy="100" r="6" fill={C.red}/><text x="42" y="104" fill={C.red} fontSize="13" fontWeight="700" fontFamily="monospace">QUANT</text></g>
+                <g><circle cx="30" cy="160" r="6" fill={C.copper}/><text x="42" y="164" fill={C.copper} fontSize="13" fontWeight="700" fontFamily="monospace">AI</text></g>
+
+                {/* 中心汇流 */}
+                <circle cx="300" cy="100" r="22" fill={C.redL}/>
+                <text x="300" y="98" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="700" fontFamily="'Noto Serif SC'">系统</text>
+                <text x="300" y="111" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="700" fontFamily="'Noto Serif SC'">闭环</text>
+
+                {/* 产出 */}
+                {[
+                  { y:50,t:'认知整理'},
+                  { y:90,t:'内容资产'},
+                  { y:130,t:'量化收益'},
+                  { y:170,t:'人物势能'},
+                ].map((o,i)=>(
+                  <g key={i}>
+                    <circle cx="430" cy={o.y} r="4" fill="#fff" opacity="0.6"/>
+                    <text x="445" y={o.y+4} fill="#aaa" fontSize="11" fontFamily="'Noto Serif SC'">{o.t}</text>
+                  </g>
+                ))}
+
+                {/* 最终复利箭头 */}
+                <path d="M 540 100 L 580 100" stroke={C.redL} strokeWidth="2" markerEnd="url(#ar)"/>
+                <defs>
+                  <marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 Z" fill={C.redL}/>
+                  </marker>
+                </defs>
+                <text x="588" y="98" fill={C.redL} fontSize="12" fontWeight="700" fontFamily="'Noto Serif SC'">复</text>
+                <text x="588" y="112" fill={C.redL} fontSize="12" fontWeight="700" fontFamily="'Noto Serif SC'">利</text>
+              </svg>
+              <div className="mt-6 text-center text-gray-500 text-xs font-mono">三条线汇成一个系统 · 系统输出复利</div>
             </div>
           </section>
         </FadeIn>
@@ -1528,6 +1722,8 @@ const OutroPage = ({ onRestart }) => {
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center relative overflow-hidden py-10" style={{ background: C.black }}>
+      <CursorGlow />
+      <GrainOverlay opacity={0.08} />
       <style>{`
         .outro-in { opacity: 0; transform: translateY(20px); transition: all 1.5s ease; }
         .outro-in.show { opacity: 1; transform: translateY(0); }

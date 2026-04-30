@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DP.OS 海报</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;500;700;900&family=Cinzel:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+    font-family: 'Noto Serif SC', serif;
+  }
+
+  .poster {
+    width: 750px;
+    min-height: 1060px;
+    background: #050505;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 背景纹理 */
+  .bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* 顶部橙色条 */
+  .top-bar {
+    height: 4px;
+    background: linear-gradient(90deg, #D4A017, #FF4D00, #D4A017);
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
+  }
+
+  /* 顶部导航区 */
+  .header {
+    padding: 28px 44px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .brand-dot {
+    width: 10px;
+    height: 10px;
+    background: #FF4D00;
+  }
+
+  .brand-name {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.25em;
+  }
+
+  .header-right {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.15em;
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  /* 主体内容区 */
+  .content {
+    flex: 1;
+    padding: 52px 44px 40px;
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 档案标签 */
+  .archive-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: #FF4D00;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .archive-tag::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 1px;
+    background: #FF4D00;
+  }
+
+  /* 主标题 */
+  .main-title {
+    font-size: 76px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.0;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+  }
+
+  .main-title .highlight {
+    color: #D4A017;
+  }
+
+  .main-title-en {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    margin-bottom: 44px;
+    margin-top: 10px;
+  }
+
+  /* 分隔线 */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, #FF4D00 0%, rgba(212,160,23,0.3) 40%, transparent 100%);
+    margin-bottom: 40px;
+  }
+
+  /* 核心信条 */
+  .core-belief {
+    font-size: 22px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.9;
+    letter-spacing: 0.08em;
+    padding-left: 20px;
+    border-left: 3px solid #FF4D00;
+    margin-bottom: 44px;
+  }
+
+  /* 章节列表 */
+  .chapters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 44px;
+  }
+
+  .chapter-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .chapter-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #FF4D00;
+    opacity: 0.8;
+    flex-shrink: 0;
+  }
+
+  .chapter-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 0.05em;
+  }
+
+  /* 底部区 */
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 32px 44px 40px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
+  }
+
+  .footer-left {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .scan-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .url-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #D4A017;
+    letter-spacing: 0.05em;
+  }
+
+  .tagline-block {
+    margin-top: 16px;
+  }
+
+  .tagline {
+    font-size: 13px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 0.15em;
+    line-height: 2;
+  }
+
+  /* QR码容器 */
+  .qr-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .qr-frame {
+    padding: 10px;
+    background: #fff;
+    position: relative;
+  }
+
+  /* QR码四角装饰 */
+  .qr-frame::before,
+  .qr-frame::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-color: #FF4D00;
+    border-style: solid;
+  }
+  .qr-frame::before { top: -3px; left: -3px; border-width: 3px 0 0 3px; }
+  .qr-frame::after  { bottom: -3px; right: -3px; border-width: 0 3px 3px 0; }
+
+  #qrcode canvas, #qrcode img {
+    display: block;
+  }
+
+  .qr-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.2em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  /* 装饰性大字 */
+  .deco-text {
+    position: absolute;
+    right: -20px;
+    top: 120px;
+    font-family: 'Cinzel', serif;
+    font-size: 180px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.015);
+    letter-spacing: -0.05em;
+    line-height: 1;
+    pointer-events: none;
+    z-index: 1;
+    user-select: none;
+  }
+
+  /* 底部橙色条 */
+  .bottom-bar {
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #D4A017 30%, #FF4D00 60%, transparent);
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
+  }
+
+  /* 打印/保存提示 */
+  .save-hint {
+    margin-top: 24px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: rgba(255,255,255,0.3);
+  }
+</style>
+</head>
+<body>
+
+<div style="display:flex; flex-direction:column; align-items:center;">
+
+<div class="poster" id="poster">
+  <div class="bg-grid"></div>
+  <div class="deco-text">DP</div>
+
+  <!-- 顶部橙条 -->
+  <div class="top-bar"></div>
+
+  <!-- 头部 -->
+  <div class="header">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <span class="brand-name">DP.OS</span>
+    </div>
+    <div class="header-right">
+      BATTLE MANUAL · v25.05<br>
+      CLASSIFIED // TEAM INTERNAL
+    </div>
+  </div>
+
+  <!-- 主内容 -->
+  <div class="content">
+    <div class="archive-tag">ARCHIVE 001 // STRATEGY BRIEF</div>
+
+    <div class="main-title">
+      大联盟<br><span class="highlight">作战手册</span>
+    </div>
+    <div class="main-title-en">DP League · Battle Manual · 2025</div>
+
+    <div class="divider"></div>
+
+    <div class="core-belief">
+      经济总量，决定比赛七成的胜负。<br>
+      规则是框架，框架之外才是真正的战场。<br>
+      先赢外交，再打经济。
+    </div>
+
+    <div class="chapters">
+      <div class="chapter-item">
+        <span class="chapter-num">01</span>
+        <span class="chapter-text">赛前情报总览</span>
+      </div>
+      <div class="chapter-item">
+        <span class="chapter-num">02</span>
+        <span class="chapter-text">唐的三组并行方案</span>
+      </div>
+      <div class="chapter-item">
+        <span class="chapter-num">03</span>
+        <span class="chapter-text">三条赚钱路径</span>
+      </div>
+      <div class="chapter-item">
+        <span class="chapter-num">04</span>
+        <span class="chapter-text">Bug 致富·实战案例</span>
+      </div>
+      <div class="chapter-item">
+        <span class="chapter-num">05</span>
+        <span class="chapter-text">标品 vs 非标品定价</span>
+      </div>
+      <div class="chapter-item">
+        <span class="chapter-num">终章</span>
+        <span class="chapter-text">五一赛·战略方向</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部 -->
+  <div class="footer">
+    <div class="footer-left">
+      <div>
+        <div class="scan-hint">扫码进入作战室</div>
+        <div class="url-text">dplianmeng429.netlify.app</div>
+      </div>
+      <div class="tagline-block">
+        <div class="tagline">三场比赛，三次夺冠</div>
+        <div class="tagline">不是运气，是一套可复用的系统</div>
+      </div>
+    </div>
+
+    <div class="qr-wrapper">
+      <div class="qr-frame">
+        <div id="qrcode"></div>
+      </div>
+      <div class="qr-label">Scan to Enter</div>
+    </div>
+  </div>
+
+  <!-- 底部橙条 -->
+  <div class="bottom-bar"></div>
+</div>
+
+<div class="save-hint">
+  在浏览器按 Cmd+Shift+4（Mac）截图保存，或右键另存为图片
+</div>
+
+</div>
+
+<script>
+  new QRCode(document.getElementById("qrcode"), {
+    text: "https://dplianmeng429.netlify.app",
+    width: 140,
+    height: 140,
+    colorDark: "#000000",
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H
+  });
+</script>
+</body>
+</html>

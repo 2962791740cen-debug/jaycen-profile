@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Jaycen · 王嘉恒</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,400;1,400;1,700&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background:#1a1a1a;
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh; padding:0;
+}
+
+/* ══════════════════════════════════════
+   海报容器
+   上半 = 深墨色（混乱）
+   下半 = 暖米白（系统）
+══════════════════════════════════════ */
+.poster {
+  width: 1080px;
+  height: 1620px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(to bottom,
+    #080C1C 0%,
+    #080C1C 50%,
+    #E8E0CF 50%,
+    #E8E0CF 100%
+  );
+  font-family: 'Noto Serif SC', serif;
+}
+
+/* 深色区：极细扫描线肌理（混乱感） */
+.dark-grain {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(255,255,255,0.012) 3px,
+    rgba(255,255,255,0.012) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 深色区：顶部光晕（人物背后的光） */
+.dark-glow {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: radial-gradient(
+    ellipse 700px 600px at 50% 90%,
+    rgba(24,100,220,0.12) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── 顶部编号（深色区）── */
+.header {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 54px 90px 0;
+}
+.h-l {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.55em;
+  color: rgba(232,224,207,0.22);
+  text-transform: uppercase;
+}
+.h-r {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: rgba(232,224,207,0.18);
+  text-align: right;
+  line-height: 1.8;
+}
+
+/* ══════════════════════════════════════
+   名字 — 横跨两个世界的边界
+   这是整张海报的唯一主角
+══════════════════════════════════════ */
+.name-wrap {
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  text-align: center;
+  padding: 0 72px;
+}
+
+.name-zh {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 900;
+  font-size: 244px;
+  line-height: 0.93;
+  letter-spacing: 0.02em;
+  display: block;
+  /*
+    上半字：米白色，对应深墨背景 ✓
+    下半字：深墨色，对应米白背景 ✓
+    分界线在元素中点 = 海报中点 (810px)
+  */
+  background: linear-gradient(
+    to bottom,
+    #E8E0CF 0%,
+    #E8E0CF 50%,
+    #080C1C 50%,
+    #080C1C 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ══════════════════════════════════════
+   米白区内容（系统区）
+══════════════════════════════════════ */
+.light-zone {
+  position: absolute;
+  left: 0; right: 0;
+  top: 810px;   /* 50% of 1620 */
+  bottom: 0;
+  z-index: 10;
+  padding: 0 90px 80px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 英文名：名字视觉底部以下留足间距 */
+.en-name {
+  /*
+    字体244px, line-height 0.93 → 总高约 227px
+    一半 = 113px 延入米白区
+    再加 30px 视觉喘息
+  */
+  margin-top: 143px;
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 26px;
+  color: rgba(8,12,28,0.32);
+  letter-spacing: 0.18em;
+}
+
+/* 分隔规则 */
+.divider {
+  margin-top: 46px;
+  position: relative;
+  height: 4px;
+}
+.div-full {
+  position: absolute;
+  inset: 1.5px 0;
+  background: rgba(8,12,28,0.1);
+  height: 1px;
+}
+.div-accent {
+  position: absolute;
+  left: 0; top: 0;
+  width: 64px; height: 4px;
+  background: #1A5EFF;
+  border-radius: 2px;
+}
+
+/* 核心句 */
+.tagline {
+  margin-top: 46px;
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 900;
+  font-size: 50px;
+  line-height: 1.5;
+  letter-spacing: 0.07em;
+  color: #080C1C;
+}
+
+.sub-en {
+  margin-top: 16px;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 15px;
+  color: rgba(8,12,28,0.35);
+  letter-spacing: 0.12em;
+}
+
+/* 弹性填充 */
+.flex-gap { flex: 1; min-height: 24px; }
+
+/* 底部区域 */
+.bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 48px;
+}
+.bottom-left {}
+.b-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.45em;
+  color: rgba(8,12,28,0.28);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.b-info {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 300;
+  font-size: 17px;
+  line-height: 2;
+  color: rgba(8,12,28,0.58);
+  letter-spacing: 0.1em;
+}
+.b-url {
+  margin-top: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #1A5EFF;
+}
+
+.bottom-right {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 11px;
+}
+.qr-frame {
+  background: white;
+  padding: 10px;
+  border: 1px solid rgba(8,12,28,0.18);
+}
+.qr-img {
+  width: 128px;
+  height: 128px;
+  display: block;
+}
+.qr-cap {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 300;
+  font-size: 11px;
+  color: rgba(8,12,28,0.38);
+  letter-spacing: 0.22em;
+  text-align: center;
+}
+
+/* ── 边界处的蓝线 ── */
+.boundary-line {
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(26,94,255,0.35) 20%,
+    rgba(26,94,255,0.55) 50%,
+    rgba(26,94,255,0.35) 80%,
+    transparent 100%
+  );
+  z-index: 15;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <div class="dark-grain"></div>
+  <div class="dark-glow"></div>
+  <div class="boundary-line"></div>
+
+  <!-- 顶部标签（深色区） -->
+  <div class="header">
+    <div class="h-l">人物档案 · Profile</div>
+    <div class="h-r">
+      No.001<br>
+      SZN · 2026
+    </div>
+  </div>
+
+  <!-- 名字 — 跨越边界，唯一的主角 -->
+  <div class="name-wrap">
+    <span class="name-zh">王嘉恒</span>
+  </div>
+
+  <!-- 米白区内容 -->
+  <div class="light-zone">
+
+    <div class="en-name">Jaycen · Wang Jiaheng</div>
+
+    <div class="divider">
+      <div class="div-full"></div>
+      <div class="div-accent"></div>
+    </div>
+
+    <div class="tagline">
+      把混乱变成系统，<br>
+      把波动变成机制。
+    </div>
+    <div class="sub-en">Building his own operating system — 18, Shenzhen.</div>
+
+    <div class="flex-gap"></div>
+
+    <div class="bottom">
+      <div class="bottom-left">
+        <div class="b-label">Identity</div>
+        <div class="b-info">
+          18岁 · 深圳 · 高三<br>
+          IP &nbsp;·&nbsp; 量化 &nbsp;·&nbsp; AI
+        </div>
+        <div class="b-url">jaycen-profile-2026.netlify.app</div>
+      </div>
+      <div class="bottom-right">
+        <div class="qr-frame">
+          <img class="qr-img"
+            src="https://api.qrserver.com/v1/create-qr-code/?size=288x288&data=https://jaycen-profile-2026.netlify.app&margin=0&color=080C1C&bgcolor=FFFFFF"
+            alt="QR Code">
+        </div>
+        <div class="qr-cap">扫码进入他的世界</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

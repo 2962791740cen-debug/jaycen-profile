@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A0606"/>
+      <stop offset="50%" stop-color="#1a0a0a"/>
+      <stop offset="100%" stop-color="#450A0A"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#DC2626" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#DC2626" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="line" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7F1D1D" stop-opacity="0"/>
+      <stop offset="20%" stop-color="#7F1D1D"/>
+      <stop offset="50%" stop-color="#FCA5A5"/>
+      <stop offset="80%" stop-color="#7F1D1D"/>
+      <stop offset="100%" stop-color="#7F1D1D" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <ellipse cx="600" cy="315" rx="500" ry="300" fill="url(#glow)"/>
+
+  <!-- 装饰横线 -->
+  <line x1="80" y1="80" x2="200" y2="80" stroke="#DC2626" stroke-width="2" opacity="0.5"/>
+  <line x1="1000" y1="550" x2="1120" y2="550" stroke="#DC2626" stroke-width="2" opacity="0.5"/>
+
+  <!-- 顶部小标签 -->
+  <text x="80" y="110" font-family="'Cinzel', 'Playfair Display', serif" font-size="14" fill="#DC2626" letter-spacing="6" font-weight="600">JAYCEN · WANG JIAHENG</text>
+  <text x="80" y="135" font-family="monospace" font-size="11" fill="#999" letter-spacing="3">PROFILE V4.0 · 2026</text>
+
+  <!-- 主标题：王嘉恒 -->
+  <text x="80" y="320" font-family="'Playfair Display', 'Noto Serif SC', serif" font-size="156" fill="#fff" font-weight="700" letter-spacing="20">王嘉恒</text>
+
+  <!-- 副标题 -->
+  <text x="80" y="380" font-family="'Noto Serif SC', serif" font-size="28" fill="#a89189" letter-spacing="8" font-weight="300">Jaycen · 正在成形中的系统</text>
+
+  <!-- 核心slogan -->
+  <text x="80" y="470" font-family="'Noto Serif SC', serif" font-size="36" fill="#ddd" font-weight="500" letter-spacing="4">把混乱，变成系统。</text>
+  <text x="80" y="520" font-family="'Noto Serif SC', serif" font-size="36" fill="#ddd" font-weight="500" letter-spacing="4">把波动，变成机制。</text>
+
+  <!-- 右侧门缝光 -->
+  <rect x="950" y="50" width="3" height="530" fill="url(#line)" opacity="0.9"/>
+
+  <!-- 三条主线标签 -->
+  <g transform="translate(80, 555)">
+    <text font-family="monospace" font-size="13" fill="#DC2626" letter-spacing="3" font-weight="bold">IP</text>
+    <text x="50" font-family="monospace" font-size="13" fill="#666">·</text>
+    <text x="70" font-family="monospace" font-size="13" fill="#DC2626" letter-spacing="3" font-weight="bold">QUANT</text>
+    <text x="155" font-family="monospace" font-size="13" fill="#666">·</text>
+    <text x="175" font-family="monospace" font-size="13" fill="#DC2626" letter-spacing="3" font-weight="bold">AI</text>
+    <text x="225" font-family="monospace" font-size="13" fill="#666" letter-spacing="2">SYSTEM &gt; SINGLE WIN</text>
+  </g>
+
+  <!-- 右下角小信息 -->
+  <text x="1120" y="585" text-anchor="end" font-family="monospace" font-size="11" fill="#666" letter-spacing="2">深圳 · 高三 · 18岁</text>
+
+  <!-- 装饰圆点 -->
+  <circle cx="1060" cy="100" r="4" fill="#DC2626"/>
+  <circle cx="1080" cy="100" r="2" fill="#DC2626" opacity="0.6"/>
+  <circle cx="1095" cy="100" r="1" fill="#DC2626" opacity="0.3"/>
+</svg>

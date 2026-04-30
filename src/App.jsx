@@ -134,7 +134,8 @@ const ShareButton = () => {
   };
 
   return (
-    <div className="fixed bottom-4 left-4 z-[200]">
+    <div className="fixed bottom-3 md:bottom-4 left-3 md:left-4 z-[200]"
+      style={{ paddingBottom: 'max(0px, env(safe-area-inset-bottom))' }}>
       {open && (
         <div className="absolute bottom-12 left-0 bg-white border border-black/10 shadow-2xl rounded-sm p-2 min-w-[200px]">
           <div className="text-[10px] font-mono text-gray-400 uppercase tracking-widest px-3 py-2">分享 / SHARE</div>
@@ -147,7 +148,7 @@ const ShareButton = () => {
         </div>
       )}
       <button onClick={() => setOpen(!open)}
-        className="w-10 h-10 bg-white border border-black/10 hover:border-[#DC2626] flex items-center justify-center shadow-lg transition-all hover:bg-[#DC2626] group">
+        className="w-11 h-11 md:w-10 md:h-10 bg-white border border-black/10 hover:border-[#DC2626] flex items-center justify-center shadow-lg transition-all hover:bg-[#DC2626] active:scale-95 group">
         {open ? <X size={16} className="text-gray-400 group-hover:text-white"/> : <Share2 size={16} className="text-gray-400 group-hover:text-white"/>}
       </button>
     </div>
@@ -367,8 +368,35 @@ const DirectoryPage = ({ onNavigate, completedChapters }) => {
 
   return (
     <div className="min-h-screen text-[#1A1414] font-sans selection:bg-[#DC2626] selection:text-white flex flex-col md:flex-row" style={{ background: C.cream }}>
-      <aside className="w-full md:w-64 bg-white border-r border-black/5 flex flex-col h-auto md:h-screen md:sticky md:top-0 z-20 flex-shrink-0">
-        <div className="p-6 md:p-8 border-b border-black/5">
+      {/* 移动端：紧凑顶栏 */}
+      <header className="md:hidden bg-white border-b border-black/5 sticky top-0 z-30">
+        <div className="px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-2.5 h-2.5 rounded-full animate-pulse" style={{ background: C.redL, boxShadow:`0 0 8px ${C.redL}` }} />
+            <span className="font-black tracking-tight text-base">Jaycen</span>
+            <span className="text-[9px] font-mono text-gray-300 uppercase tracking-widest">v4.0</span>
+          </div>
+          <div className="text-[10px] font-mono text-gray-300">深圳 · 高三 · 18岁</div>
+        </div>
+        <div className="px-4 pb-3 flex gap-2 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth:'none' }}>
+          {chapters.map(c => {
+            const completed = completedChapters?.has(c.mod);
+            return (
+              <button key={c.id} onClick={() => onNavigate(c.mod)}
+                className="flex-shrink-0 px-3 py-1.5 text-[11px] font-mono font-bold border bg-gray-50 hover:bg-red-50 transition-all flex items-center gap-1.5 active:scale-95"
+                style={{ borderColor: completed ? `${C.redL}40` : '#e5e5e5' }}>
+                <span className="text-gray-300">{c.id}</span>
+                <span className="text-gray-700">{c.title}</span>
+                {completed && <CheckCircle2 size={10} style={{ color:C.redL }}/>}
+              </button>
+            );
+          })}
+        </div>
+      </header>
+
+      {/* 桌面端：完整侧边栏 */}
+      <aside className="hidden md:flex w-64 bg-white border-r border-black/5 flex-col md:h-screen md:sticky md:top-0 z-20 flex-shrink-0">
+        <div className="p-8 border-b border-black/5">
           <div className="flex items-center gap-2 mb-1">
             <div className="w-3 h-3 rounded-full" style={{ background: C.redL, boxShadow:`0 0 8px ${C.redL}` }} />
             <span className="font-black tracking-tight text-lg">Jaycen</span>
@@ -442,7 +470,7 @@ const DirectoryPage = ({ onNavigate, completedChapters }) => {
                     const r = e.currentTarget.getBoundingClientRect();
                     setSpot({ x: e.clientX - r.left, y: e.clientY - r.top, on: true });
                   }}
-                  className="h-full relative bg-white border border-black/5 cursor-pointer overflow-hidden transition-all duration-400 hover:-translate-y-1"
+                  className="h-full relative bg-white border border-black/5 cursor-pointer overflow-hidden transition-all duration-400 hover:-translate-y-1 active:scale-[0.98]"
                   style={{ boxShadow: isH ? `0 24px 50px -15px ${item.color}40` : '' }}>
                   {isH && (
                     <div className="absolute pointer-events-none transition-opacity duration-200" style={{
@@ -540,7 +568,7 @@ const ProfilePage = ({ onNextModule }) => {
   const tags = ['深圳', '高三', '18岁', '量化投资', '内容IP', 'AI工作流', '社群经营', '第一性原理', '长期主义', '复利思维'];
 
   return (
-    <div ref={containerRef} className="h-screen overflow-y-auto text-[#1A1414] font-sans scroll-smooth selection:bg-[#DC2626] selection:text-white" style={{ background: C.paper }}>
+    <div ref={containerRef} data-scroll-container className="h-screen overflow-y-auto text-[#1A1414] font-sans scroll-smooth selection:bg-[#DC2626] selection:text-white" style={{ background: C.paper }}>
       <style>{`
         .ppersp { perspective: 1200px; }
         .pflip { transform-style: preserve-3d; transition: transform 0.7s cubic-bezier(0.3,0.7,0.3,1); }
@@ -731,7 +759,7 @@ const TimelinePage = ({ onNextModule }) => {
   const fillD = `${pathD} L ${points[points.length - 1].x} ${H - PAD} L ${points[0].x} ${H - PAD} Z`;
 
   return (
-    <div ref={containerRef} className="h-screen overflow-y-auto font-sans scroll-smooth selection:bg-[#DC2626] selection:text-white" style={{ background: C.black, color: '#d8d0cc' }}>
+    <div ref={containerRef} data-scroll-container className="h-screen overflow-y-auto font-sans scroll-smooth selection:bg-[#DC2626] selection:text-white" style={{ background: C.black, color: '#d8d0cc' }}>
       <div className="fixed top-0 left-0 h-1 z-50 transition-all" style={{ width: `${progress * 100}%`, background: C.redL }} />
       <nav className="fixed top-0 w-full px-6 py-4 flex justify-between items-center z-40 backdrop-blur-md border-b border-white/5" style={{ background: `${C.black}E0` }}>
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNextModule('directory')}>
@@ -857,6 +885,15 @@ const TracksPage = ({ onNextModule }) => {
     return () => c.removeEventListener('scroll', fn);
   }, []);
 
+  // 切换tab时滚回顶部 + 重置进度条
+  const switchTrack = (k) => {
+    setActiveTrack(k);
+    if (containerRef.current) {
+      containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    setProgress(0);
+  };
+
   const tracks = {
     ip: { label:'个人IP', tag:'CONTENT', color:C.redV, icon:BookOpen,
       headline:'不是单纯发内容，而是把人生过程资产化。',
@@ -896,7 +933,7 @@ const TracksPage = ({ onNextModule }) => {
   const t = tracks[activeTrack];
 
   return (
-    <div ref={containerRef} className="h-screen overflow-y-auto text-[#1A1414] font-sans scroll-smooth selection:bg-[#DC2626] selection:text-white" style={{ background: C.paper }}>
+    <div ref={containerRef} data-scroll-container className="h-screen overflow-y-auto text-[#1A1414] font-sans scroll-smooth selection:bg-[#DC2626] selection:text-white" style={{ background: C.paper }}>
       <div className="fixed top-0 left-0 h-1 z-50 transition-all" style={{ width: `${progress * 100}%`, background: t.color }} />
       <nav className="fixed top-0 w-full px-4 md:px-6 py-4 flex justify-between items-center z-40 backdrop-blur-md border-b border-black/5" style={{ background: `${C.paper}E0` }}>
         <div className="flex items-center gap-2 cursor-pointer group" onClick={() => onNextModule('directory')}>
@@ -905,7 +942,7 @@ const TracksPage = ({ onNextModule }) => {
         </div>
         <div className="flex gap-2">
           {Object.entries(tracks).map(([k, v]) => (
-            <button key={k} onClick={() => setActiveTrack(k)}
+            <button key={k} onClick={() => switchTrack(k)}
               className="px-2 md:px-3 py-1.5 text-[10px] font-mono font-bold transition-all"
               style={{ background: activeTrack === k ? v.color : 'transparent', color: activeTrack === k ? 'white' : '#999', border: `1px solid ${activeTrack === k ? v.color : '#e5e5e5'}` }}>
               {v.tag}
@@ -964,7 +1001,7 @@ const TracksPage = ({ onNextModule }) => {
                 { k: 'ai', label: 'AI工作流', role: '中间层放大器', color: C.copper },
               ].map(item => (
                 <div key={item.k} className={`p-4 md:p-5 border transition-all cursor-pointer ${activeTrack === item.k ? 'border-white/30 bg-white/10' : 'border-white/5 hover:bg-white/[0.05]'}`}
-                  onClick={() => setActiveTrack(item.k)}>
+                  onClick={() => switchTrack(item.k)}>
                   <div className="text-[10px] font-mono font-bold mb-2" style={{ color: item.color }}>{item.label}</div>
                   <div className="text-gray-400 text-sm">{item.role}</div>
                 </div>
@@ -1015,7 +1052,12 @@ const MindsetPage = ({ onNextModule }) => {
   ];
 
   return (
-    <div ref={containerRef} className="h-screen overflow-y-auto font-sans scroll-smooth selection:bg-[#DC2626] selection:text-white" style={{ background: C.paper }}>
+    <div ref={containerRef} data-scroll-container className="h-screen overflow-y-auto font-sans scroll-smooth selection:bg-[#DC2626] selection:text-white" style={{ background: C.paper }}>
+      <style>{`
+        @media (min-width: 768px) {
+          .prio-row { transform: scale(var(--s, 1)); }
+        }
+      `}</style>
       <div className="fixed top-0 left-0 h-1 z-50 transition-all" style={{ width: `${progress * 100}%`, background: C.redL }} />
       <nav className="fixed top-0 w-full px-6 py-4 flex justify-between items-center z-40 backdrop-blur-md border-b border-black/5" style={{ background: `${C.paper}E0` }}>
         <div className="flex items-center gap-2 cursor-pointer group" onClick={() => onNextModule('directory')}>
@@ -1041,7 +1083,7 @@ const MindsetPage = ({ onNextModule }) => {
             <p className="text-sm text-gray-400 mb-8">从底盘到外显结果——视觉上越靠下越基础</p>
             <div className="space-y-3">
               {os.map((item) => (
-                <div key={item.rank} className="flex gap-3 md:gap-5 items-stretch transition-all" style={{ transform: `scale(${item.scale})` }}>
+                <div key={item.rank} className="prio-row flex gap-3 md:gap-5 items-stretch transition-all" style={{ '--s': item.scale }}>
                   <div className="w-10 md:w-12 flex-shrink-0 flex items-center justify-center text-2xl font-black font-mono" style={{ color: item.color, opacity: 0.3 }}>{item.rank}</div>
                   <div className="flex-1 bg-white border border-black/5 p-5 md:p-6 flex gap-4 md:gap-6 items-start">
                     <div className="w-1 self-stretch rounded-full flex-shrink-0" style={{ background: item.color }} />
@@ -1157,7 +1199,7 @@ const AssetsPage = ({ onNextModule }) => {
   ];
 
   return (
-    <div ref={containerRef} className="h-screen overflow-y-auto font-sans scroll-smooth selection:bg-[#DC2626] selection:text-white" style={{ background: C.black, color: '#d8d0cc' }}>
+    <div ref={containerRef} data-scroll-container className="h-screen overflow-y-auto font-sans scroll-smooth selection:bg-[#DC2626] selection:text-white" style={{ background: C.black, color: '#d8d0cc' }}>
       <style>{`
         @keyframes flash { 0% { box-shadow: 0 0 0 0 rgba(220,38,38,0); } 30% { box-shadow: 0 0 70px 10px rgba(220,38,38,0.7); } 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0); } }
         .flash { animation: flash 0.8s ease-out; }
@@ -1615,6 +1657,17 @@ const App = () => {
   const navOrder = ['directory', 'ch01', 'ch02', 'ch03', 'ch04', 'ch05', 'final'];
 
   useEffect(() => {
+    // 切页面时强制滚到顶部（修复移动端跳到底部的bug）
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      // 兼容老浏览器
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      // 重置所有内部滚动容器
+      requestAnimationFrame(() => {
+        document.querySelectorAll('[data-scroll-container]').forEach(el => { el.scrollTop = 0; });
+      });
+    } catch {}
     STATE.pagesVisited.add(current);
     if (current !== 'landing' && current !== 'outro') {
       setCompletedChapters(prev => {
@@ -1672,10 +1725,11 @@ const App = () => {
       `}</style>
       {current !== 'landing' && current !== 'outro' && (
         <>
-          <div className="fixed bottom-4 right-4 z-[200] flex gap-1">
+          <div className="fixed bottom-3 md:bottom-4 right-3 md:right-4 z-[200] flex gap-1 md:gap-1 bg-white/85 backdrop-blur-sm px-1.5 py-1.5 md:px-1 md:py-0 rounded-sm shadow-lg md:shadow-none md:bg-transparent md:backdrop-blur-none"
+            style={{ paddingBottom: 'max(0.375rem, env(safe-area-inset-bottom))' }}>
             {navItems.map(item => (
               <button key={item.id} onClick={() => nav(item.id)}
-                className={`w-8 h-8 text-[10px] font-mono font-bold transition-all border ${current === item.id ? 'text-white' : 'bg-white/90 text-gray-400 border-gray-200 hover:text-[#7F1D1D]'}`}
+                className={`w-10 h-10 md:w-8 md:h-8 text-[11px] md:text-[10px] font-mono font-bold transition-all border ${current === item.id ? 'text-white' : 'bg-white/95 text-gray-500 border-gray-200 hover:text-[#7F1D1D]'} active:scale-95`}
                 style={current === item.id ? { background: C.redV, borderColor: C.redV } : { borderColor: '#e5e5e5' }}
                 onMouseEnter={(e) => { if (current !== item.id) e.currentTarget.style.borderColor = C.redV; }}
                 onMouseLeave={(e) => { if (current !== item.id) e.currentTarget.style.borderColor = '#e5e5e5'; }}>
